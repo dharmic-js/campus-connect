@@ -28,13 +28,14 @@ import {
 } from 'lucide-react';
 
 // --- INSTAGRAM-STYLE BLUE VERIFIED TICK ---
-const VerifiedTick = ({ className = "w-4 h-4" }) => (
+const VerifiedTick = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg
     viewBox="0 0 24 24"
     fill="none"
     className={`inline-block shrink-0 ${className}`}
-    title="Verified Same-University Student"
+    aria-label="Verified Same-University Student"
   >
+    <title>Verified Same-University Student</title>
     <circle cx="12" cy="12" r="10" className="fill-sky-500" />
     <path
       d="M8.5 12.5L10.8 14.8L15.5 9.5"
@@ -53,7 +54,10 @@ function drawCustomCampusConnectLogo(ctx, canvasWidth, canvasHeight) {
 
   const logicalW = 760;
   const logicalH = 250;
-  const scale = Math.min((canvasWidth * 0.94) / logicalW, (canvasHeight * 0.72) / logicalH);
+  const isMobile = canvasWidth < 640;
+  const maxW = isMobile ? canvasWidth * 0.92 : Math.min(canvasWidth * 0.88, 1150);
+  const maxH = isMobile ? canvasHeight * 0.38 : canvasHeight * 0.46;
+  const scale = Math.min(maxW / logicalW, maxH / logicalH);
   const offsetX = (canvasWidth - logicalW * scale) / 2;
   const offsetY = (canvasHeight - logicalH * scale) / 2;
 
@@ -482,8 +486,11 @@ function drawDapHands(ctx, width, height, dapProgress, impactSparks) {
 
   // Position directly over the center of the settled "campus connect" logo
   const centerX = width / 2;
-  const centerY = height * 0.52;
-  const px = Math.max(3.4, Math.min(width / 115, 6.0));
+  const centerY = height / 2;
+  const isMobile = width < 640;
+  const px = isMobile
+    ? Math.max(2.8, Math.min(width / 115, 4.8))
+    : Math.max(3.6, Math.min(width / 135, 6.2));
 
   // Swing & approach phase (0 -> 0.72): hands & extended arms swing in along an arc
   const approachT = Math.min(1, dapProgress / 0.72);
@@ -597,23 +604,30 @@ function drawDapHands(ctx, width, height, dapProgress, impactSparks) {
 }
 
 // --- FALLING PIXELS LOGO + SWINGING DAP HANDS HERO CANVAS (12-15 SEC TOTAL TIMELINE) ---
-const FallingPixelLogoHero = () => {
-  const canvasRef = useRef(null);
+const FallingPixelLogoHero = ({
+  onAnimationComplete,
+  isAnimationDone = false,
+  onScrollDown
+}: {
+  onAnimationComplete?: () => void;
+  isAnimationDone?: boolean;
+  onScrollDown?: () => void;
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [replayTrigger, setReplayTrigger] = useState(0);
+  const completedNotifiedRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let animationFrameId;
+    if (!ctx) return;
+    let animationFrameId: number;
 
     const setupAndRun = () => {
       const dpr = window.devicePixelRatio || 1;
-      const width = canvas.parentElement.clientWidth;
-      const isMobile = width < 640;
-      const height = isMobile
-        ? Math.min(Math.max(window.innerHeight * 0.42, 250), 330)
-        : Math.min(Math.max(window.innerHeight * 0.54, 340), 460);
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -625,14 +639,15 @@ const FallingPixelLogoHero = () => {
       offCanvas.width = width;
       offCanvas.height = height;
       const offCtx = offCanvas.getContext('2d');
+      if (!offCtx) return;
 
       drawCustomCampusConnectLogo(offCtx, width, height);
 
       const imgData = offCtx.getImageData(0, 0, width, height).data;
-      const step = width < 520 ? 3 : 4;
+      const step = width < 520 ? 3 : (width > 1600 ? 5 : 4);
       const particles = [];
 
-      // Tuned pixel fall physics (~4.8s fall + ~0.4s settle + ~2.8s swing & dap = ~8s total sequence)
+      // Tuned pixel fall physics (~4.2s fall + ~0.3s settle + ~2.5s swing & dap = ~7s total sequence)
       for (let y = 0; y < height; y += step) {
         for (let x = 0; x < width; x += step) {
           const idx = (y * width + x) * 4;
@@ -642,10 +657,10 @@ const FallingPixelLogoHero = () => {
               tx: x,
               ty: y,
               x: x + (Math.random() - 0.5) * 16,
-              y: -Math.random() * height * 1.35 - (height - y) * 0.45 - Math.abs(columnWave),
-              vy: 0.8 + Math.random() * 0.8,
-              gravity: 0.022 + Math.random() * 0.012,
-              maxVy: 4.2 + Math.random() * 1.2,
+              y: -Math.random() * height * 0.9 - (height - y) * 0.45 - Math.abs(columnWave),
+              vy: 0.9 + Math.random() * 0.9,
+              gravity: 0.024 + Math.random() * 0.014,
+              maxVy: 4.6 + Math.random() * 1.4,
               landed: false,
               size: step + 0.35,
               alpha: 0.75 + Math.random() * 0.25
@@ -701,11 +716,11 @@ const FallingPixelLogoHero = () => {
         }
         const landedRatio = particles.length > 0 ? landedCount / particles.length : 1;
 
-        // Once settled (~4.8s), pause briefly (~0.4s), then swing hands in over ~2.8s (~8s total)
+        // Once settled (~4.2s), pause briefly (~0.3s), then swing hands in over ~2.5s
         if (landedRatio >= 0.998) {
           settleFrames++;
-          if (settleFrames > 24) {
-            dapProgress = Math.min(1, dapProgress + 0.0062);
+          if (settleFrames > 18) {
+            dapProgress = Math.min(1, dapProgress + 0.0075);
           }
         }
 
@@ -747,22 +762,67 @@ const FallingPixelLogoHero = () => {
           drawDapHands(ctx, width, height, dapProgress, impactSparks);
         }
 
+        // Check if full animation sequence is completed
+        if (dapProgress >= 1) {
+          if (!completedNotifiedRef.current) {
+            completedNotifiedRef.current = true;
+            if (onAnimationComplete) {
+              onAnimationComplete();
+            }
+          }
+        }
+
         animationFrameId = requestAnimationFrame(render);
       };
 
       render();
     };
 
+    let resizeTimer: any;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        cancelAnimationFrame(animationFrameId);
+        setupAndRun();
+      }, 150);
+    };
+
+    const handleSkipOrComplete = () => {
+      if (!completedNotifiedRef.current) {
+        completedNotifiedRef.current = true;
+        if (onAnimationComplete) {
+          onAnimationComplete();
+        }
+      }
+    };
+
     setupAndRun();
-    window.addEventListener('resize', setupAndRun);
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('wheel', handleSkipOrComplete, { passive: true });
+    window.addEventListener('touchmove', handleSkipOrComplete, { passive: true });
+
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', setupAndRun);
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('wheel', handleSkipOrComplete);
+      window.removeEventListener('touchmove', handleSkipOrComplete);
     };
-  }, [replayTrigger]);
+  }, [replayTrigger, onAnimationComplete]);
+
+  const handleClick = () => {
+    if (!isAnimationDone && !completedNotifiedRef.current) {
+      completedNotifiedRef.current = true;
+      if (onAnimationComplete) {
+        onAnimationComplete();
+      }
+    } else {
+      setReplayTrigger((c) => c + 1);
+    }
+  };
 
   return (
-    <section className="relative w-full bg-black pt-1 pb-2 flex flex-col items-center justify-center overflow-hidden">
+    <section className="relative w-full h-[100dvh] min-h-[100dvh] bg-black flex flex-col items-center justify-center overflow-hidden select-none">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
         .font-editorial-mono {
@@ -814,13 +874,50 @@ const FallingPixelLogoHero = () => {
         }
       `}</style>
 
-      <div className="w-full max-w-6xl mx-auto px-3 sm:px-6">
+      {/* FULL-SCREEN HERO CANVAS */}
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center">
         <canvas
           ref={canvasRef}
-          onClick={() => setReplayTrigger((c) => c + 1)}
-          className="w-full cursor-pointer block"
-          title="Tap to replay falling pixels & dap-up"
+          onClick={handleClick}
+          className="w-full h-full block cursor-pointer"
+          title={isAnimationDone ? "Tap to replay falling pixels & dap-up" : "Tap anywhere to skip animation"}
         />
+      </div>
+
+      {/* SKIP HINT (WHILE ANIMATION IS PLAYING) */}
+      {!isAnimationDone && (
+        <div className="absolute bottom-6 right-6 z-20 pointer-events-none opacity-40">
+          <span className="text-[10px] font-bold tracking-widest uppercase text-zinc-400">
+            Tap / Scroll to skip
+          </span>
+        </div>
+      )}
+
+      {/* SCROLL TO EXPLORE BUTTON (APPEARS ONCE ANIMATION FINISHES) */}
+      <div
+        className={`absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 z-20 transition-all duration-700 ease-out flex flex-col items-center gap-2 ${
+          isAnimationDone
+            ? 'opacity-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 translate-y-6 pointer-events-none'
+        }`}
+      >
+        <button
+          onClick={onScrollDown}
+          className="group flex flex-col items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/[0.10] hover:border-white/25 backdrop-blur-xl transition-all cursor-pointer focus:outline-none"
+          title="Scroll down to explore pooling verticals"
+        >
+          <span className="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase text-zinc-300 group-hover:text-white transition-colors">
+            Scroll to Explore
+          </span>
+          <svg
+            className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white animate-bounce transition-colors"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </button>
       </div>
     </section>
   );
@@ -1283,10 +1380,11 @@ const INITIAL_POOLS = [
 
 export default function App() {
   const [currentView, setCurrentView] = useState('landing');
-  const [pools, setPools] = useState(INITIAL_POOLS);
+  const [isHeroAnimationDone, setIsHeroAnimationDone] = useState(false);
+  const [pools, setPools] = useState<any[]>(INITIAL_POOLS);
   const [searchQuery, setSearchQuery] = useState('');
-  const [pausedCards, setPausedCards] = useState({});
-  const verticalsRef = useRef(null);
+  const [pausedCards, setPausedCards] = useState<Record<string, boolean>>({});
+  const verticalsRef = useRef<HTMLDivElement | null>(null);
 
   // User Profile & Auth State
   const [isSignedIn, setIsSignedIn] = useState(true);
@@ -1725,7 +1823,13 @@ export default function App() {
   return (
     <div className="min-h-screen bg-black text-white font-editorial-mono flex flex-col justify-between pb-24 md:pb-12 overflow-x-hidden selection:bg-white selection:text-black">
       {/* TOP NAVIGATION BAR */}
-      <header className="sticky top-0 z-30 bg-black/80 backdrop-blur-xl">
+      <header
+        className={`fixed top-0 left-0 right-0 z-40 bg-black/85 backdrop-blur-xl border-b border-white/[0.08] transition-all duration-700 ease-out ${
+          currentView !== 'landing' || isHeroAnimationDone
+            ? 'opacity-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 -translate-y-full pointer-events-none'
+        }`}
+      >
         <div className="max-w-6xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
           {/* Left: Profile Tab + Brand Wordmark */}
           <div className="flex items-center gap-2 sm:gap-3 relative min-w-0">
@@ -1930,11 +2034,21 @@ export default function App() {
         </div>
       )}
 
-      {/* FALLING PIXEL HERO LOGO + DAP HANDS (LANDING PAGE) */}
-      {currentView === 'landing' && <FallingPixelLogoHero />}
+      {/* FALLING PIXEL HERO LOGO + DAP HANDS (LANDING PAGE - FULL SCREEN) */}
+      {currentView === 'landing' && (
+        <FallingPixelLogoHero
+          onAnimationComplete={() => setIsHeroAnimationDone(true)}
+          isAnimationDone={isHeroAnimationDone}
+          onScrollDown={() => verticalsRef.current?.scrollIntoView({ behavior: 'smooth' })}
+        />
+      )}
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-4 sm:pt-8">
+      <main
+        className={`flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 ${
+          currentView === 'landing' ? 'pt-14 sm:pt-20' : 'pt-20 sm:pt-24'
+        }`}
+      >
         {/* =========================================================
             VIEW 1: PRIMARY LANDING PAGE
            ========================================================= */}
@@ -3090,7 +3204,13 @@ export default function App() {
       )}
 
       {/* MOBILE BOTTOM NAVIGATION BAR */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-black/90 backdrop-blur-xl px-2 py-2 flex items-center justify-around">
+      <nav
+        className={`md:hidden fixed bottom-0 left-0 right-0 z-30 bg-black/95 backdrop-blur-xl px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around border-t border-zinc-800/80 shadow-2xl transition-all duration-700 ease-out ${
+          currentView !== 'landing' || isHeroAnimationDone
+            ? 'opacity-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 translate-y-full pointer-events-none'
+        }`}
+      >
         <button
           onClick={() => setCurrentView('landing')}
           className={`flex flex-col items-center py-1 px-2 text-[10px] font-bold uppercase ${

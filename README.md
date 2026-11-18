@@ -66,3 +66,4 @@ Output will be generated in `dist/`.
 
 ## 📄 License
 MIT License. Built for university campus communities.
+
