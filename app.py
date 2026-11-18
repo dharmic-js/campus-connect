@@ -40,6 +40,7 @@ class UserProfile(BaseModel):
 class PoolItem(BaseModel):
     id: str
     category: str
+    isAuthor: Optional[bool] = False
     hostName: str
     hostRating: float = 5.0
     hostTrips: int = 0
@@ -77,6 +78,101 @@ class ChatMessage(BaseModel):
 user_profile_db = UserProfile()
 
 pools_db: List[Dict[str, Any]] = [
+    {
+        "id": "ride-100",
+        "category": "rides",
+        "isAuthor": True,
+        "hostName": "You (Aryan K.)",
+        "hostRating": 4.92,
+        "hostTrips": 23,
+        "hostAvatar": "AK",
+        "hostPhone": "+91 98000 •••00",
+        "platform": "Uber XL (Split via UPI)",
+        "routeFrom": "Hostel H4 Gate / Campus Circle",
+        "routeTo": "Kempegowda Int. Airport (T1 / T2)",
+        "timeWindow": "Tomorrow, 6:00 AM – 6:30 AM",
+        "totalPrice": 1400,
+        "spotsTotal": 4,
+        "spotsFilled": 2,
+        "expectedPerPerson": 350,
+        "notes": "Catching early morning flight home. Space for 2 medium bags in trunk. Splitting equally via UPI.",
+        "joined": True,
+        "agreedContribution": 350,
+        "rated": False,
+        "status": "open"
+    },
+    {
+        "id": "qc-200",
+        "category": "market",
+        "isAuthor": True,
+        "hostName": "You (Aryan K.)",
+        "hostRating": 4.92,
+        "hostTrips": 23,
+        "hostAvatar": "AK",
+        "hostPhone": "+91 98000 •••00",
+        "platform": "Blinkit (Hostel H4 Run)",
+        "dropLocation": "Hostel H4 2nd Floor Common Lounge",
+        "timeWindow": "Ordering in 15 mins",
+        "currentCart": 135,
+        "targetCart": 199,
+        "benefitUnlocked": "Free Delivery (MOV ₹199) + Zero Surge",
+        "spotsTotal": 4,
+        "spotsFilled": 1,
+        "expectedPerPerson": 64,
+        "notes": "Late night study snacks & Red Bull cans. Need ~₹64 more cart value to bypass delivery & surge fee!",
+        "joined": True,
+        "agreedContribution": 64,
+        "rated": False,
+        "status": "open"
+    },
+    {
+        "id": "food-300",
+        "category": "food",
+        "isAuthor": True,
+        "hostName": "You (Aryan K.)",
+        "hostRating": 4.92,
+        "hostTrips": 23,
+        "hostAvatar": "AK",
+        "hostPhone": "+91 98000 •••00",
+        "platform": "Swiggy Gourmet",
+        "restaurant": "Meghana Foods / Empire Nights",
+        "dropLocation": "Hostel H4 Front Porch",
+        "timeWindow": "Ordering tonight at 9:30 PM",
+        "currentCart": 580,
+        "targetCart": 900,
+        "benefitUnlocked": "Flat ₹200 OFF on ₹900+ coupon",
+        "spotsTotal": 4,
+        "spotsFilled": 2,
+        "expectedPerPerson": 160,
+        "notes": "Boneless chicken biryani & paneer ghee roast ordered. Need 1-2 more to hit the ₹900 mark for flat ₹200 off!",
+        "joined": True,
+        "agreedContribution": 160,
+        "rated": False,
+        "status": "open"
+    },
+    {
+        "id": "sports-400",
+        "category": "community",
+        "isAuthor": True,
+        "hostName": "You (Aryan K.)",
+        "hostRating": 4.92,
+        "hostTrips": 23,
+        "hostAvatar": "AK",
+        "hostPhone": "+91 98000 •••00",
+        "platform": "Campus Sports Gymkhana",
+        "sportType": "Badminton Doubles / 7v7 Football",
+        "venue": "Indoor Sports Complex (Court 2)",
+        "timeWindow": "Tomorrow, 6:30 PM – 7:30 PM",
+        "totalPrice": 300,
+        "spotsTotal": 4,
+        "spotsFilled": 2,
+        "expectedPerPerson": 75,
+        "notes": "Looking for 2 intermediate doubles badminton players! Extra racquets and feather shuttles ready.",
+        "joined": True,
+        "agreedContribution": 75,
+        "rated": False,
+        "status": "open"
+    },
     {
         "id": "ride-101",
         "category": "rides",
@@ -306,6 +402,8 @@ def create_pool(item: Dict[str, Any]):
 def update_pool(pool_id: str, updates: Dict[str, Any]):
     for i, pool in enumerate(pools_db):
         if pool["id"] == pool_id:
+            if not pool.get("isAuthor") and pool.get("hostName") != user_profile_db.name:
+                raise HTTPException(status_code=403, detail="Only the author can edit requirements for this pool")
             pools_db[i].update(updates)
             return pools_db[i]
     raise HTTPException(status_code=404, detail="Pool not found")

@@ -1218,9 +1218,34 @@ const CATEGORIES = [
 
 // --- INITIAL SAMPLE POOLS ---
 const INITIAL_POOLS = [
+  // 1. VERTICAL: RIDES (Author Pool by Default Account)
+  {
+    id: 'ride-100',
+    category: 'rides',
+    isAuthor: true,
+    hostName: 'You (Aryan K.)',
+    hostRating: 4.92,
+    hostTrips: 23,
+    hostAvatar: 'AK',
+    hostPhone: '+91 98000 •••00',
+    platform: 'Uber XL (Split via UPI)',
+    routeFrom: 'Hostel H4 Gate / Campus Circle',
+    routeTo: 'Kempegowda Int. Airport (T1 / T2)',
+    timeWindow: 'Tomorrow, 6:00 AM – 6:30 AM',
+    totalPrice: 1400,
+    spotsTotal: 4,
+    spotsFilled: 2,
+    expectedPerPerson: 350,
+    notes: 'Catching early morning flight home. Space for 2 medium bags in trunk. Splitting equally via UPI.',
+    joined: true,
+    agreedContribution: 350,
+    rated: false,
+    status: 'open'
+  },
   {
     id: 'ride-101',
     category: 'rides',
+    isAuthor: false,
     hostName: 'Aarav Mehta',
     hostRating: 4.9,
     hostTrips: 34,
@@ -1243,6 +1268,7 @@ const INITIAL_POOLS = [
   {
     id: 'ride-102',
     category: 'rides',
+    isAuthor: false,
     hostName: 'Sneha Nair',
     hostRating: 4.8,
     hostTrips: 19,
@@ -1262,9 +1288,36 @@ const INITIAL_POOLS = [
     rated: false,
     status: 'open'
   },
+
+  // 2. VERTICAL: QUICK COMMERCE (Author Pool by Default Account)
+  {
+    id: 'qc-200',
+    category: 'qcommerce',
+    isAuthor: true,
+    hostName: 'You (Aryan K.)',
+    hostRating: 4.92,
+    hostTrips: 23,
+    hostAvatar: 'AK',
+    hostPhone: '+91 98000 •••00',
+    platform: 'Blinkit (Hostel H4 Run)',
+    dropLocation: 'Hostel H4 2nd Floor Common Lounge',
+    timeWindow: 'Ordering in 15 mins',
+    currentCart: 135,
+    targetCart: 199,
+    benefitUnlocked: 'Free Delivery (MOV ₹199) + Zero Surge',
+    spotsTotal: 4,
+    spotsFilled: 1,
+    expectedPerPerson: 64,
+    notes: 'Late night study snacks & Red Bull cans. Need ~₹64 more cart value to bypass delivery & surge fee!',
+    joined: true,
+    agreedContribution: 64,
+    rated: false,
+    status: 'open'
+  },
   {
     id: 'qc-201',
     category: 'qcommerce',
+    isAuthor: false,
     hostName: 'Rohan Gupta',
     hostRating: 5.0,
     hostTrips: 52,
@@ -1288,6 +1341,7 @@ const INITIAL_POOLS = [
   {
     id: 'qc-202',
     category: 'qcommerce',
+    isAuthor: false,
     hostName: 'Diya Sharma',
     hostRating: 4.7,
     hostTrips: 14,
@@ -1308,9 +1362,37 @@ const INITIAL_POOLS = [
     rated: false,
     status: 'open'
   },
+
+  // 3. VERTICAL: FOOD CRAVINGS POOL (Author Pool by Default Account)
+  {
+    id: 'food-300',
+    category: 'food',
+    isAuthor: true,
+    hostName: 'You (Aryan K.)',
+    hostRating: 4.92,
+    hostTrips: 23,
+    hostAvatar: 'AK',
+    hostPhone: '+91 98000 •••00',
+    platform: 'Swiggy Gourmet',
+    restaurant: 'Meghana Foods / Empire Nights',
+    dropLocation: 'Hostel H4 Front Porch',
+    timeWindow: 'Ordering tonight at 9:30 PM',
+    currentCart: 580,
+    targetCart: 900,
+    benefitUnlocked: 'Flat ₹200 OFF on ₹900+ coupon',
+    spotsTotal: 4,
+    spotsFilled: 2,
+    expectedPerPerson: 160,
+    notes: 'Boneless chicken biryani & paneer ghee roast ordered. Need 1-2 more to hit the ₹900 mark for flat ₹200 off!',
+    joined: true,
+    agreedContribution: 160,
+    rated: false,
+    status: 'open'
+  },
   {
     id: 'food-301',
     category: 'food',
+    isAuthor: false,
     hostName: 'Kabir Verma',
     hostRating: 4.9,
     hostTrips: 41,
@@ -1335,6 +1417,7 @@ const INITIAL_POOLS = [
   {
     id: 'food-302',
     category: 'food',
+    isAuthor: false,
     hostName: 'Ananya Rao',
     hostRating: 4.8,
     hostTrips: 27,
@@ -1356,9 +1439,35 @@ const INITIAL_POOLS = [
     rated: false,
     status: 'open'
   },
+
+  // 4. VERTICAL: TURF & SPORTS SQUAD (Author Pool by Default Account)
+  {
+    id: 'sport-400',
+    category: 'sports',
+    isAuthor: true,
+    hostName: 'You (Aryan K.)',
+    hostRating: 4.92,
+    hostTrips: 23,
+    hostAvatar: 'AK',
+    hostPhone: '+91 98000 •••00',
+    platform: 'Campus Gymkhana',
+    sportType: 'Badminton Doubles / 7v7 Football',
+    venue: 'Indoor Sports Complex (Court 2)',
+    timeWindow: 'Tomorrow, 6:30 PM – 7:30 PM',
+    totalPrice: 300,
+    spotsTotal: 4,
+    spotsFilled: 2,
+    expectedPerPerson: 75,
+    notes: 'Looking for 2 intermediate doubles badminton players! Extra racquets and feather shuttles provided.',
+    joined: true,
+    agreedContribution: 75,
+    rated: false,
+    status: 'open'
+  },
   {
     id: 'sport-401',
     category: 'sports',
+    isAuthor: false,
     hostName: 'Vikramaditya S.',
     hostRating: 4.9,
     hostTrips: 29,
@@ -1381,6 +1490,7 @@ const INITIAL_POOLS = [
   {
     id: 'sport-402',
     category: 'sports',
+    isAuthor: false,
     hostName: 'Pranav & Simran',
     hostRating: 5.0,
     hostTrips: 16,
@@ -1604,6 +1714,12 @@ export default function App() {
 
   // --- EDIT POOL REQUIREMENTS HANDLER ---
   const openEditRequirementsModal = (pool) => {
+    if (!pool) return;
+    const isAuthor = Boolean(pool.isAuthor || pool.hostName === userProfile.name);
+    if (!isAuthor) {
+      showToast('Only the author can edit this pool.');
+      return;
+    }
     setEditingPool(pool);
     setEditPoolDraft({
       timeWindow: pool.timeWindow || '',
@@ -1691,6 +1807,7 @@ export default function App() {
     const created = {
       id,
       category: cat,
+      isAuthor: true,
       hostName: userProfile.name,
       hostRating: userProfile.trustScore,
       hostTrips: userProfile.poolsJoined,
@@ -2243,6 +2360,7 @@ export default function App() {
                   const amountRemaining = pool.targetCart
                     ? Math.max(0, pool.targetCart - pool.currentCart)
                     : 0;
+                  const isAuthor = Boolean(pool.isAuthor || pool.hostName === userProfile.name);
 
                   return (
                     <div
@@ -2357,11 +2475,16 @@ export default function App() {
                               {pool.hostAvatar}
                             </div>
                             <div>
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 flex-wrap">
                                 <span className="text-xs font-bold text-white">
                                   {pool.hostName}
                                 </span>
                                 <VerifiedTick className="w-3.5 h-3.5" />
+                                {isAuthor && (
+                                  <span className="px-1.5 py-0.5 rounded bg-white/15 text-white text-[9px] font-bold uppercase tracking-wider">
+                                    YOUR POOL
+                                  </span>
+                                )}
                                 <span className="inline-flex items-center gap-0.5 text-[11px] font-bold text-zinc-300">
                                   ★ {pool.hostRating}
                                 </span>
@@ -2384,17 +2507,40 @@ export default function App() {
                           </div>
                         </div>
 
-                        {/* Action Buttons */}
-                        {!pool.joined ? (
+                        {/* Action Buttons: Only the author can edit */}
+                        {isAuthor ? (
                           <div className="grid grid-cols-3 gap-2">
                             <button
                               onClick={() => openEditRequirementsModal(pool)}
-                              className="py-2.5 px-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[11px] font-bold uppercase flex items-center justify-center gap-1 transition"
-                              title="Pool Poster: Edit Requirements & Price Anytime"
+                              className="py-2.5 px-2 rounded-xl bg-white hover:bg-zinc-200 text-black text-[11px] font-bold uppercase flex items-center justify-center gap-1.5 transition font-bold"
+                              title="Author: Edit Pool Requirements & Price Anytime"
                             >
                               <SlidersHorizontal className="w-3.5 h-3.5" />
                               <span>EDIT REQ.</span>
                             </button>
+                            <button
+                              onClick={() => {
+                                setActiveChatPoolId(pool.id);
+                                setInVoiceCall(false);
+                              }}
+                              className="py-2.5 px-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white text-[11px] font-bold uppercase flex items-center justify-center gap-1.5 transition"
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              <span>CHAT</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveChatPoolId(pool.id);
+                                setInVoiceCall(true);
+                              }}
+                              className="py-2.5 px-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white text-[11px] font-bold uppercase flex items-center justify-center gap-1.5 transition"
+                            >
+                              <Phone className="w-3.5 h-3.5" />
+                              <span>CALL</span>
+                            </button>
+                          </div>
+                        ) : !pool.joined ? (
+                          <div className="grid grid-cols-2 gap-2">
                             <button
                               onClick={() => openJoinOrNegotiate(pool, 'negotiate')}
                               className="py-2.5 px-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white text-[11px] font-bold uppercase transition"
@@ -2403,14 +2549,14 @@ export default function App() {
                             </button>
                             <button
                               onClick={() => openJoinOrNegotiate(pool, 'instant')}
-                              className="py-2.5 px-2 rounded-xl bg-white hover:bg-zinc-200 text-black text-[11px] font-bold uppercase transition"
+                              className="py-2.5 px-2 rounded-xl bg-white hover:bg-zinc-200 text-black text-[11px] font-bold uppercase transition font-bold"
                             >
                               BOOK SPOT
                             </button>
                           </div>
                         ) : (
                           <div className="space-y-2">
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <div className="grid grid-cols-3 gap-2">
                               <button
                                 onClick={() => {
                                   setActiveChatPoolId(pool.id);
@@ -2432,13 +2578,6 @@ export default function App() {
                                 <span>CALL</span>
                               </button>
                               <button
-                                onClick={() => openEditRequirementsModal(pool)}
-                                className="py-2.5 px-2.5 rounded-xl bg-white/[0.06] text-zinc-200 text-[11px] font-bold uppercase flex items-center justify-center gap-1.5 hover:bg-white/[0.12] transition"
-                              >
-                                <SlidersHorizontal className="w-3.5 h-3.5" />
-                                <span>EDIT REQ.</span>
-                              </button>
-                              <button
                                 onClick={() => {
                                   setRatingPool(pool);
                                   setSelectedStars(5);
@@ -2451,7 +2590,7 @@ export default function App() {
                                 }`}
                               >
                                 <Star className="w-3.5 h-3.5" />
-                                <span>{pool.rated ? 'RATED' : 'RATE PEER'}</span>
+                                <span>{pool.rated ? 'RATED' : 'RATE'}</span>
                               </button>
                             </div>
                           </div>
@@ -2713,12 +2852,14 @@ export default function App() {
               </div>
 
               <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => openEditRequirementsModal(activeChatPool)}
-                  className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase bg-white/[0.08] text-white hover:bg-white/[0.15]"
-                >
-                  EDIT REQ.
-                </button>
+                {(activeChatPool?.isAuthor || activeChatPool?.hostName === userProfile.name) && (
+                  <button
+                    onClick={() => openEditRequirementsModal(activeChatPool)}
+                    className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase bg-white/[0.08] text-white hover:bg-white/[0.15]"
+                  >
+                    EDIT REQ.
+                  </button>
+                )}
                 <button
                   onClick={() => setInVoiceCall(!inVoiceCall)}
                   className={`p-2 rounded-lg transition ${
