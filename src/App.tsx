@@ -614,8 +614,8 @@ const FallingPixelLogoHero = ({
   onScrollDown?: () => void;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [replayTrigger, setReplayTrigger] = useState(0);
   const completedNotifiedRef = useRef(false);
+  const handleSkipOrCompleteRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -675,6 +675,23 @@ const FallingPixelLogoHero = ({
         speed: 0.3 + Math.random() * 0.55,
         size: 2
       }));
+
+      const renderStatic = () => {
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = '#FFFFFF';
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          ctx.fillRect(p.tx, p.ty, p.size, p.size);
+        }
+        drawDapHands(ctx, width, height, 1, []);
+      };
+
+      // If animation was already completed, keep it 100% static - do not replay
+      if (isAnimationDone || completedNotifiedRef.current) {
+        renderStatic();
+        return;
+      }
 
       const createSparks = () =>
         Array.from({ length: 24 }, (_, i) => {
@@ -770,6 +787,8 @@ const FallingPixelLogoHero = ({
               onAnimationComplete();
             }
           }
+          renderStatic();
+          return;
         }
 
         animationFrameId = requestAnimationFrame(render);
@@ -790,11 +809,14 @@ const FallingPixelLogoHero = ({
     const handleSkipOrComplete = () => {
       if (!completedNotifiedRef.current) {
         completedNotifiedRef.current = true;
+        cancelAnimationFrame(animationFrameId);
+        setupAndRun();
         if (onAnimationComplete) {
           onAnimationComplete();
         }
       }
     };
+    handleSkipOrCompleteRef.current = handleSkipOrComplete;
 
     setupAndRun();
     window.addEventListener('resize', handleResize);
@@ -804,20 +826,22 @@ const FallingPixelLogoHero = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
       clearTimeout(resizeTimer);
+      handleSkipOrCompleteRef.current = null;
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('wheel', handleSkipOrComplete);
       window.removeEventListener('touchmove', handleSkipOrComplete);
     };
-  }, [replayTrigger, onAnimationComplete]);
+  }, [onAnimationComplete, isAnimationDone]);
 
   const handleClick = () => {
     if (!isAnimationDone && !completedNotifiedRef.current) {
-      completedNotifiedRef.current = true;
-      if (onAnimationComplete) {
+      if (handleSkipOrCompleteRef.current) {
+        handleSkipOrCompleteRef.current();
+      } else if (onAnimationComplete) {
         onAnimationComplete();
       }
     } else {
-      setReplayTrigger((c) => c + 1);
+      onScrollDown?.();
     }
   };
 
@@ -880,7 +904,7 @@ const FallingPixelLogoHero = ({
           ref={canvasRef}
           onClick={handleClick}
           className="w-full h-full block cursor-pointer"
-          title={isAnimationDone ? "Tap to replay falling pixels & dap-up" : "Tap anywhere to skip animation"}
+          title={isAnimationDone ? "Campus Connect" : "Tap anywhere to skip animation"}
         />
       </div>
 
